@@ -11,29 +11,9 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		000000000000000000000010 /* ViewModel */ = {
+		E70B3CC630A3472200303C8C /* planto */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = ViewModel;
-			sourceTree = "<group>";
-		};
-		E70B3CA930A1FB0700303C8C /* Model */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Model;
-			sourceTree = "<group>";
-		};
-		E70B3CC130A346A100303C8C /* View */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = View;
-			sourceTree = "<group>";
-		};
-		E70B3CC530A346C900303C8C /* Server */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Server;
-			sourceTree = "<group>";
-		};
-		E70B3CC630A3472200303C8C /* New Folder */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "New Folder";
+			path = planto;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -50,11 +30,7 @@
 		000000000000000000000001 = {
 			isa = PBXGroup;
 			children = (
-				E70B3CC630A3472200303C8C /* New Folder */,
-				E70B3CC530A346C900303C8C /* Server */,
-				E70B3CC130A346A100303C8C /* View */,
-				E70B3CA930A1FB0700303C8C /* Model */,
-				000000000000000000000010 /* ViewModel */,
+				E70B3CC630A3472200303C8C /* planto */,
 				000000000000000000000020 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -81,11 +57,7 @@
 			buildRules = (
 			);
 			fileSystemSynchronizedGroups = (
-				000000000000000000000010 /* ViewModel */,
-				E70B3CA930A1FB0700303C8C /* Model */,
-				E70B3CC130A346A100303C8C /* View */,
-				E70B3CC530A346C900303C8C /* Server */,
-				E70B3CC630A3472200303C8C /* New Folder */,
+				E70B3CC630A3472200303C8C /* planto */,
 			);
 			name = MyApp;
 			productName = MyApp;
