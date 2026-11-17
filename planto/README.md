@@ -1,5 +1,4 @@
 # Planto 
-
 Planto is a plant care reminder app for iPhone. It keeps all your plants in one place and reminds you when it's time to water them.
 
 ## Main Features
