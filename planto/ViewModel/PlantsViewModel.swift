@@ -13,7 +13,8 @@ import Observation  // عشان @Observable
 // MARK: - حالات الشاشة الرئيسية (من Sketch)
 
 enum HomeState {
-    case empty      // ما فيه نباتات      ← شاشة "Start your plant journey!"
+    case empty        // مستخدم جديد، أول مرة        ← شاشة "Start your plant journey!"
+    case noReminders  // بدأ قبل، بس ما عنده نباتات  ← شاشة "No reminders set yet.."
     case list       // فيه نباتات          ← شاشة "Today Reminder"
     case allDone    // كل النباتات انسقت   ← شاشة "All Done! 🎉"
 }
@@ -35,11 +36,23 @@ final class PlantsViewModel {
     // (عشان نقدر نعطيه الحقيقي في التطبيق، والتجريبي في الـ Preview)
     private let store: PlantStoring
 
+    // الإشعارات. نفس الفكرة: نوعها "الاتفاقية"، فنقدر نعطيه الحقيقي أو التجريبي
+    private let notifications: NotificationScheduling
+
+    // هل المستخدم بدأ قبل؟ (ضغط Set Plant Reminder مرة)
+    // false = مستخدم جديد ← "Start your plant journey!"
+    // true  = مو جديد     ← "No reminders set yet.."
+    // نحفظها في الجوال عشان ما ترجع شاشة البداية لو سكّر التطبيق
+    private(set) var hasStarted: Bool = UserDefaults.standard.bool(forKey: "hasStarted")
+
     // init = أول ما ينولد الـ ViewModel
-    // "= UserDefaultsPlantStore()" = إذا ما عطيناه مخزن، ياخذ الحقيقي تلقائياً
-    init(store: PlantStoring = UserDefaultsPlantStore()) {
+    // "= ..." = إذا ما عطيناه شي، ياخذ الحقيقي تلقائياً
+    init(store: PlantStoring = UserDefaultsPlantStore(),
+         notifications: NotificationScheduling = LocalNotificationService()) {
         self.store = store
-        self.plants = store.load()     // نقرأ النباتات المحفوظة من الجوال
+        self.notifications = notifications
+        self.plants = store.load()           // نقرأ النباتات المحفوظة من الجوال
+        notifications.requestPermission()    // نطلب إذن الإشعارات (أول مرة بس يطلع للمستخدم)
     }
 
 
@@ -73,7 +86,8 @@ final class PlantsViewModel {
     // أي حالة تظهر في الشاشة الرئيسية
     var state: HomeState {
         if plants.isEmpty {
-            return .empty                         // ما فيه نباتات
+            // ما فيه نباتات: جديد ← البداية،  مو جديد ← No reminders
+            return hasStarted ? .noReminders : .empty
         } else if wateredCount == plants.count {
             return .allDone                       // كلها انسقت
         } else {
@@ -84,10 +98,17 @@ final class PlantsViewModel {
 
     // MARK: - أوامر (الشاشات تطلبها، والـ ViewModel ينفذها)
 
+    // المستخدم ضغط "Set Plant Reminder" ← خلاص صار مو جديد
+    func markStarted() {
+        hasStarted = true
+        UserDefaults.standard.set(true, forKey: "hasStarted")   // نحفظها في الجوال
+    }
+
     // إضافة نبتة جديدة (زر ✓ في الفورم)
     func add(_ plant: Plant) {
         plants.append(plant)          // نضيفها للقائمة
         save()                        // ونحفظ
+        notifications.schedule(for: plant)   // ونجدول إشعارها
     }
 
     // تعديل نبتة موجودة (الفورم بوضع التعديل)
@@ -96,12 +117,14 @@ final class PlantsViewModel {
         guard let index = plants.firstIndex(where: { $0.id == plant.id }) else { return }
         plants[index] = plant         // نبدلها بالنسخة المعدلة
         save()
+        notifications.schedule(for: plant)   // نحدّث إشعارها (يلغي القديم ويسوي جديد)
     }
 
     // حذف نبتة (الـ swipe، أو زر Delete Reminder)
     func delete(_ plant: Plant) {
         plants.removeAll { $0.id == plant.id }   // نشيل النبتة اللي لها نفس الـ id
         save()
+        notifications.cancel(for: plant)         // ونلغي إشعارها
     }
 
     // تشييك / إلغاء تشييك (الدائرة ○ ✓ في الصف)
